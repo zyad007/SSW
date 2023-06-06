@@ -31,5 +31,15 @@ class Assignment {
         ,[this.title, this.description, this.file_url , this.id]);
     }
 
+    static async delete(id: Number): Promise<void> {
+        await pool.query('DELETE FROM assignment WHERE id = $1', 
+        [id]);
+    }
+
+    async delete(): Promise<void> {
+        Assignment.delete(this.id);
+    }
 
 }
+
+export default Assignment;

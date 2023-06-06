@@ -106,4 +106,15 @@ class User_Course {
         return courses;
     }
 
+    static async isUSerInCourse(user_id: Number, course_id:Number): Promise<User> {
+        const {rows} = await pool.query('SELECT * FROM "user" WHERE id IN (SELECT user_id FROM user_course WHERE course_id = $1 AND user_id = $2)',
+        [user_id, course_id]);
+
+        return new User(rows[0]);
+    }
+
+    
+    
 }
+
+export default User_Course;

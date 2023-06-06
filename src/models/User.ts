@@ -38,9 +38,10 @@ class User {
         return user;
     }
 
-    static async getAll(): Promise<User[]> {
+    static async getAll(search: String): Promise<User[]> {
         const users: User[] = [];
-        const {rows} = await pool.query('SELECT * FROM "user"');
+        const {rows} = await pool.query('SELECT * FROM "user" WHERE email LIKE %$1%',
+        [search]);
 
         rows.forEach(row => {
             const user: UserType = row;
