@@ -65,6 +65,7 @@ CREATE TABLE user_assignment (
 	id INT PRIMARY KEY NOT NULL,
 	comments VARCHAR(255),
 	sub_url VARCHAR(255),
+	grade INT DEFAULT NULL,
 
 	course_id INT,
 	CONSTRAINT fk_course FOREIGN KEY(course_id) REFERENCES course(id) ON DELETE CASCADE,
@@ -189,3 +190,103 @@ INSERT INTO user_course (user_id, course_id, role) VALUES (1, 1, 'STUDENT')
 DELETE user_course WHERE user_id = 1 AND course_id = 1
 
 -- CREATING SESSION WITHIN COURSE:
+
+
+/***************************************************************************/
+-- insert into course table:-
+
+INSERT INTO course (name, description, no_participants) 
+	VALUES 
+/* id=1 */    ('Javascript','This is the Javascript course', 0),
+/* id=2 */    ('C++','This is the C++ course', 0),
+/* id=3 */    ('C#','This is the C# course', 0),
+/* id=4 */    ('Java','This is the Java course', 0),
+/* id=5 */    ('Python','This is the Python course', 0),
+/* id=6 */    ('Embeded','This is the Embeded by chanlenger adhoum course', 0);
+
+
+-- insert into user table:-
+
+INSERT INTO user (email,password,name) 
+	VALUES 
+/* id=1 */    ('zyad@mail.com','123456789','Zyad Sallem'),
+/* id=2 */    ('bichoy@mail.com','987654321','Bichoy Atef'),
+/* id=3 */	  ('ahmed@mail.com','564987321','Ahmed Osama'),
+/* id=4 */    ('adhoun@mail.com','111111111','adhm ehab'), 
+/* id=5 */    ('ziad@mail.com','000000000','ziad hazem');
+
+-- insert into User_course table:-
+
+INSERT INTO user_course (user_id, course_id, role) 
+	VALUES 
+/id=1/    (1, 1, 'TEACHER'),
+/id=2/    (2, 1, 'STUDENT'),
+/id=3/    (3, 1, 'STUDENT'),
+/id=4/    (4, 1, 'STUDENT'),
+/id=5/    (5, 2, 'TEACHER'),
+/id=6/    (1, 2, 'STUDENT'),
+/id=7/    (3, 2, 'STUDENT'),
+/id=8/    (4, 2, 'STUDENT'),
+/id=9/    (4, 3, 'TEACHER'),
+/id=10/   (5, 3, 'STUDENT');
+
+-- insert into assignment:-
+
+INSERT INTO assignment (title, description, file_url, course_id)
+	VALUES 
+/id=1/    ('ASSIGNMENT1', 'JAVA CODE', 'DESKTOP', 1);
+    
+-- insert into user_assignment:-
+
+INSERT INTO user_assignment 
+	(comments, sub_url, course_id, user_id, user_course_id, assignment_id)
+	VALUES 
+    ('OOP', 'JAVA CODE', 1, 2, 2, 1),
+    ('OOP', 'JAVA CODE', 1, 3, 3, 1),
+    ('OOP', 'JAVA CODE', 1, 4, 4, 1);
+
+-- insert into chat_message:-
+
+INSERT INTO chat_message (content, user_name, course_id)    
+	VALUES
+    ('javscript usage ?', 'bichoy', 1),
+    ('front-end', 'ahmed', 1),
+    ('c++ oop', 'zyad', 2),
+    ('smart home using embeded system', 'adhm', 6);
+    
+-- insert into session table:-
+
+INSERT INTO session (title, description, course_id)    
+	VALUES
+/id=1/    ('javscript', 'beginner in javascript', 1),
+/id=2/    ('c++', 'usage of c++', 2),
+/id=3/    ('java', 'java oop', 4);
+    
+    
+-- insert into user_session:-
+
+INSERT INTO user_session (course_id, user_id, user_course_id, session_id)    
+	VALUES
+/id=1/    (1, 2, 2, 1),
+/id=2/    (1, 3, 3, 1),
+/id=3/    (1, 4, 4, 1),
+/id=4/    (2, 1, 6, 2),
+/id=5/    (2, 3, 7, 2),
+/id=6/    (2, 4, 8, 2);
+    
+-- insert into time_stamp:-
+
+INSERT INTO time_stamp (time_in_sec, content, session_id)    
+	VALUES
+/id=1/    (1, 'consle.log(1)', 1),
+/id=2/    (2, 'consle.log(12)', 1),
+/id=3/    (3, 'consle.log(123)', 1);
+    
+    
+-- insert into note table:-
+
+INSERT INTO note (time_in_sec, content, session_id, course_id, user_id, user_course_id)    
+	VALUES
+/id=1/    (1, 'print1', 1, 1, 2, 2),
+/id=2/    (2, 'print2', 1, 1, 3, 3),
+/id=3/    (3, 'print3', 1, 1, 4, 4);
