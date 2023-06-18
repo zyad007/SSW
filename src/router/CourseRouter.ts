@@ -76,7 +76,7 @@ CourseRouter.get('/course/:id', async (req:Request, res:Response) => {
 })
 
 //Relation User
-CourseRouter.get('/course/managed', async (req:Request, res:Response) => {
+CourseRouter.post('/course/managed', async (req:Request, res:Response) => {
     try {
         const courses = await Course.getTeacherCourses(req.body.user.id);
 
@@ -86,7 +86,8 @@ CourseRouter.get('/course/managed', async (req:Request, res:Response) => {
     }
 })
 
-CourseRouter.get('/course/assigned', async (req:Request, res:Response) => {
+
+CourseRouter.post('/course/assigned', async (req:Request, res:Response) => {
     try {
         const user_courses = await User_Course.findAllByUserId(req.body.user.id);
 
@@ -144,6 +145,29 @@ CourseRouter.get('/course/:id/students', async (req:Request, res:Response) => {
         res.send(users);
 
     } catch(err:any) {
+        res.status(500).send({error: err.message});
+    }
+})
+
+CourseRouter.delete('/course/:id/students/:studentId', async(req:Request, res:Response) => {
+    try {
+        const courseId = Number(req.params.id);
+        const userId = Number(req.params.studentId)
+
+        const course = await Course.find(courseId);
+
+        if(!course) return res.status(400).send({error: 'Course not found'})
+
+        if(course.teacher_id === req.body.user.id) return res.status(400).send({error: "You can't join as student in your course"})
+
+        const user_course = await User_Course.findByUserIdAndCourseId(courseId, userId);
+
+        if(!user_course) return res.status(400).send({error: "Studnet is not assigned in course"});
+
+        await user_course.delete();
+
+        res.send({message: 'Deleted'})
+    }catch(err: any) {
         res.status(500).send({error: err.message});
     }
 })
