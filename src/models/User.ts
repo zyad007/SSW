@@ -2,6 +2,7 @@ import pool from "../db/postgres";
 import bcrypt from "bcrypt";
 import UserType from "../types/User";
 import validator from "validator";
+import jwt from "jsonwebtoken"
 
 class User {
     id: number;
@@ -79,6 +80,10 @@ class User {
 
     async delete(): Promise<void> {
         await User.delete(this.id);
+    }
+
+    async generateJWT(): Promise<String> {
+        return jwt.sign({ id: this.id }, 'secret');
     }
 
     async checkPassword(password: string): Promise<boolean> {

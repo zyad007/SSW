@@ -4,7 +4,7 @@
 -- is the main user of the system
 ---------------------------------------------------------------------------------------------------------------
 CREATE TABLE "user" (
-    id INT PRIMARY KEY NOT NULL,
+    id SERIAL PRIMARY KEY NOT NULL,
     email VARCHAR(50) NOT NULL,
     name VARCHAR(50),
     password VARCHAR(255)
@@ -16,7 +16,7 @@ CREATE TABLE "user" (
 -- instructor to add assigments for the students to be submitted.
 ---------------------------------------------------------------------------------------------------------------
 CREATE TABLE course (
-    id INT PRIMARY KEY NOT NULL,
+    id SERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(50),
     description VARCHAR(255),
     no_participants INT
@@ -24,7 +24,7 @@ CREATE TABLE course (
 
 -- Many To Many joint table between the Course and User
 CREATE TABLE user_course (
-    id INT PRIMARY KEY NOT NULL,
+    id SERIAL PRIMARY KEY NOT NULL,
     role VARCHAR(50),
 
     course_id INT,
@@ -36,13 +36,13 @@ CREATE TABLE user_course (
 
 -- Many To One joint table between the Messages and Course
 CREATE TABLE chat_message (
-	id INT PRIMARY KEY NOT NULL,
+	id SERIAL PRIMARY KEY NOT NULL,
     content VARCHAR(255),
     user_name VARCHAR(50),
 
     course_id INT,
 	CONSTRAINT fk_course FOREIGN KEY(course_id) REFERENCES course(id) ON DELETE CASCADE
-)
+);
 ---------------------------------------------------------------------------------------------------------------
 -- ASSIGNEMNT:
 -- is the assignment that the instructor assign for the students within the course, as the course 
@@ -51,7 +51,7 @@ CREATE TABLE chat_message (
 
 -- Creating the Assignment Table that is Many to One with the Course
 CREATE TABLE assignment (
-	id INT PRIMARY KEY NOT NULL,
+	id SERIAL PRIMARY KEY NOT NULL,
 	title VARCHAR(50),
 	description VARCHAR(255),
 	file_url VARCHAR(255),
@@ -62,7 +62,7 @@ CREATE TABLE assignment (
 
 -- Many To Many joint table between the Assignment and User_Course
 CREATE TABLE user_assignment (
-	id INT PRIMARY KEY NOT NULL,
+	id SERIAL PRIMARY KEY NOT NULL,
 	comments VARCHAR(255),
 	sub_url VARCHAR(255),
 	grade INT DEFAULT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE user_assignment (
 
 -- Creating the Session Table that is Many to One with the Course
 CREATE TABLE session (
-	id INT PRIMARY KEY NOT NULL,
+	id SERIAL PRIMARY KEY NOT NULL,
 	title VARCHAR(50),
 	description VARCHAR(255),
     
@@ -99,7 +99,7 @@ CREATE TABLE session (
 
 -- Many To Many joint table between the Session and User_Course
 CREATE TABLE user_session (
-	id INT PRIMARY KEY NOT NULL,
+	id SERIAL PRIMARY KEY NOT NULL,
 
 	course_id INT,
 	CONSTRAINT fk_course FOREIGN KEY(course_id) REFERENCES course(id) ON DELETE CASCADE,
@@ -116,7 +116,7 @@ CREATE TABLE user_session (
 
 -- Many To One joint table between the Time_Stamp and Session
 CREATE TABLE time_stamp (
-    id INT PRIMARY KEY NOT NULL,
+    id SERIAL PRIMARY KEY NOT NULL,
     time_in_sec INT,
     content VARCHAR(255),
 
@@ -132,7 +132,7 @@ CREATE TABLE time_stamp (
 
 -- Many To One joint table between the Note and User_Session
 CREATE TABLE note (
-    id INT PRIMARY KEY NOT NULL,
+    id SERIAL PRIMARY KEY NOT NULL,
     time_in_sec INT,
     content VARCHAR(255),
 

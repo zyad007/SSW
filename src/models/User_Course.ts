@@ -5,30 +5,23 @@ import User from "./User";
 
 class User_Course {
     id: Number;
-    role: String;
     course_id: Number;
     user_id: Number;
 
     constructor(userCourse: User_CoureType) {
         this.id = userCourse.id as Number;
-        this.role = userCourse.role as String;
         this.course_id = userCourse.course_id as Number;
         this.user_id = userCourse.user_id as Number;
     }
 
     static async save(userCourse: User_CoureType): Promise<User_Course> {
 
-        const {rows} = await pool.query('INSERT INTO user_course (role,course_id,user_id) VALUES ($1,$2,$3) RETURNING *', 
-        [userCourse.role, userCourse.course_id, userCourse.user_id ]);
+        const {rows} = await pool.query('INSERT INTO user_course (course_id,user_id) VALUES ($1,$2) RETURNING *', 
+        [userCourse.course_id, userCourse.user_id]);
         
         const userCourseDb = rows[0];
 
         return new User_Course(userCourseDb);
-    }
-
-    async save(): Promise<void> {
-        await pool.query('UPDATE user_course SET role = $1 WHERE id = $2'
-        ,[this.role, this.id]);
     }
 
     static async delete(id: Number): Promise<void> {
@@ -43,6 +36,19 @@ class User_Course {
         let userCourseDb : User_CoureType | undefined;
         
         const {rows} =  await pool.query('SELECT * FROM user_course WHERE id = $1', [id]);
+        userCourseDb = rows[0];
+
+        if(!userCourseDb) return null;
+
+        return new User_Course(userCourseDb);
+    }
+
+    static async findByUserIdAndCourseId(course_id: number, user_id: number): Promise<User_Course | null> {
+        let userCourseDb : User_CoureType | undefined;
+        
+        const {rows} =  await pool.query('SELECT * FROM user_course WHERE user_id = $1 AND course_id = $2',
+        [user_id, course_id]);
+        
         userCourseDb = rows[0];
 
         if(!userCourseDb) return null;
@@ -77,6 +83,8 @@ class User_Course {
 
         return userCourses;
     }
+
+
 
     static async findStudentsForCourse(courseId: Number): Promise<User[]> {
         const students: User[] = [];

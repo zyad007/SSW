@@ -1,17 +1,22 @@
 import pool from "../db/postgres";
 import CourseType from "../types/Course";
+import utils from "../utils/utils";
 
 class Course {
     id: Number;
     name: String;
     description: String;
-    no_participants: Number;
+    no_participants: number;
+    teacher_id: Number;
+    code: String;
 
     constructor(course: CourseType) {
         this.id = course.id as Number;
         this.description = course.description as String;
         this.name = course.name as String;
-        this.no_participants = course.no_participants as Number;
+        this.no_participants = course.no_participants as number;
+        this.teacher_id = course.teacher_id as Number;
+        this.code = course.code as String;
     }
 
     //CRUD
@@ -41,12 +46,39 @@ class Course {
 
     static async save(course: CourseType): Promise<Course> {
 
-        const {rows} = await pool.query('INSERT INTO course (name,description,no_participants) VALUES ($1,$2,$3) RETURNING *', 
-        [course.name,course.description,0]);
+        const courses = await Course.findAll()
+        let code = utils.makeid(8);
+        
+        let flag = true;
+
+        while(flag) {
+            code = utils.makeid(8);
+            
+            if(courses.length === 0) break;
+
+            for(let i=0; i<courses.length; i++) {
+                flag = false;
+                if(courses[i].code === code){
+                    code = utils.makeid(8);
+                    flag = true;
+                    break;
+                }
+            }
+        }
+
+        const {rows} = await pool.query('INSERT INTO course (name,description,no_participants,teacher_id,code) VALUES ($1,$2,$3,$4,$5) RETURNING *', 
+        [course.name,course.description,0,course.teacher_id,code]);
         
         const courseDb = rows[0];
 
         return new Course(courseDb);
+    }
+
+    static async findByCode(code:string): Promise<Course> {
+        const {rows} = await pool.query('SELECT * FROM course WHERE code = $1',
+        [code]);
+
+        return rows[0];
     }
 
     async save(): Promise<void> {
@@ -63,14 +95,23 @@ class Course {
     }
 
     //User Relation
+    static async getTeacherCourses(teacher_id:Number): Promise<Course[]> {
+        const {rows} = await pool.query('SELECT * FROM course WHERE teacher_id = $1',
+        [teacher_id]);
 
+        rows.map(row => new Course(row as CourseType))
+
+        return rows
+    }
 
     toJSON() {
         return {
             id: this.id,
             name: this.name,
             description: this.description,
-            no_participants:this.no_participants
+            no_participants:this.no_participants,
+            teacher_id:this.teacher_id,
+            code:this.code
         }
     }
 
